@@ -27,6 +27,19 @@ jobs:
     with:
       maven_args: '--batch-mode --errors --show-version verify javadoc:javadoc -Prun-its'
 
+  upload-profiler:
+    name: Upload profiler json file
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/upload-artifact@v4
+        with:
+          name: profiler-json
+          path: .profiler/profiler-report-*.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: profiler-html
+          path: .profiler/profiler-report-*.html
 
 #  deploy:
 #    name: Deploy
