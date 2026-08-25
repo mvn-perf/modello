@@ -22,14 +22,14 @@
 # extension from the Maven Central snapshot repository before any Maven invocation, and
 # archiving the report it produces. Everything else is a copy of the shared workflow with
 # Modello's arguments applied, so keep the jobs below in sync with it.
+#
+# Do not move the build arguments into an env entry named MAVEN_ARGS: Maven 3.9 reads that
+# variable itself and appends it to every invocation, so the wrapper bootstrap would run
+# the whole build too.
 
 name: GitHub CI
 
 on: [push, pull_request]
-
-env:
-  MAVEN_ARGS: '--batch-mode --errors --show-version verify javadoc:javadoc -Prun-its'
-  MAVEN_VERSION: '3.9.11'
 
 jobs:
 
@@ -65,10 +65,10 @@ jobs:
       # monitored, and its report would otherwise be left behind if the real build below
       # never reaches the end of its session.
       - name: Set up Maven
-        run: mvn --errors --batch-mode --show-version "-Dmvnflight.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=${{ env.MAVEN_VERSION }}"
+        run: mvn --errors --batch-mode --show-version "-Dmvnflight.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=3.9.11"
 
       - name: Build with Maven
-        run: ./mvnw ${{ env.MAVEN_ARGS }}
+        run: ./mvnw --batch-mode --errors --show-version verify javadoc:javadoc -Prun-its
 
       # mvnflight writes the report when the Maven session ends, a failed one included,
       # which is exactly the build worth looking at - hence always().
@@ -107,10 +107,10 @@ jobs:
         run: mvn --batch-mode --errors --no-transfer-progress --update-snapshots dependency:resolve
 
       - name: Set up Maven
-        run: mvn --errors --batch-mode --show-version "-Dmvnflight.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=${{ env.MAVEN_VERSION }}"
+        run: mvn --errors --batch-mode --show-version "-Dmvnflight.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=3.9.11"
 
       - name: Build with Maven
-        run: ./mvnw ${{ env.MAVEN_ARGS }}
+        run: ./mvnw --batch-mode --errors --show-version verify javadoc:javadoc -Prun-its
 
       - name: Archive the mvnflight build report
         if: always()
