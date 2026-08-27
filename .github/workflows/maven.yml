@@ -15,21 +15,106 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# This workflow used to be a one-line call to the shared workflow
+# codehaus-plexus/.github/.github/workflows/maven.yml@master. It is inlined here because
+# the build now loads the mvnflight core extension (.mvn/extensions.xml) to record every
+# CI build, and that needs two steps the shared workflow does not offer: resolving the
+# extension from the Maven Central snapshot repository before any Maven invocation, and
+# archiving the report it produces. Everything else is a copy of the shared workflow with
+# Modello's arguments applied, so keep the jobs below in sync with it.
+#
+# Do not move the build arguments into an env entry named MAVEN_ARGS: Maven 3.9 reads that
+# variable itself and appends it to every invocation, so the wrapper bootstrap would run
+# the whole build too.
+
 name: GitHub CI
 
 on: [push, pull_request]
 
-
 jobs:
+
   build:
-    name: Build it
-    uses: codehaus-plexus/.github/.github/workflows/maven.yml@master
-    with:
-      maven_args: '--batch-mode --errors --show-version verify javadoc:javadoc -Prun-its'
+    name: fail-fast-build
+    runs-on: ubuntu-latest
+    # execute on any push or pull request from forked repo
+    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork)) &&
+      !startsWith(github.event.head_commit.message , '[maven-release-plugin] prepare release')
 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
 
-#  deploy:
-#    name: Deploy
-#    needs: build
-#    uses: codehaus-plexus/.github/.github/workflows/maven-deploy.yml@master
-#    secrets: inherit
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+          cache: 'maven'
+
+      # Must come before any Maven invocation rooted at the checkout, the wrapper bootstrap
+      # below included: Maven loads the core extensions listed in .mvn/extensions.xml before
+      # it reads pom.xml, resolving them from settings.xml only, so the Maven Central
+      # snapshot repository serving mvnflight cannot be declared in pom.xml. Building
+      # .mvn/pom.xml downloads the extension into the local repository, where every later
+      # invocation finds it. See .mvn/pom.xml.
+      - name: Pre-resolve the mvnflight extension
+        working-directory: .mvn
+        run: mvn --batch-mode --errors --no-transfer-progress --update-snapshots dependency:resolve
+
+      # mvnflight is switched off here: this bootstrap invocation is not the build being
+      # monitored, and its report would otherwise be left behind if the real build below
+      # never reaches the end of its session.
+      - name: Set up Maven
+        run: mvn --errors --batch-mode --show-version "-Dmvnflight.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=3.9.11"
+
+      - name: Build with Maven
+        run: ./mvnw --batch-mode --errors --show-version verify javadoc:javadoc -Prun-its
+
+      # mvnflight writes the report when the Maven session ends, a failed one included,
+      # which is exactly the build worth looking at - hence always().
+      - name: Archive the mvnflight build report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mvnflight-fail-fast-build
+          path: target/mvnflight
+
+  verify:
+    needs: build
+    name: ${{ matrix.os }} jdk-${{ matrix.jdk }}-${{ matrix.distribution }}
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest' ]
+        jdk: [ '25', '21', '8' ]
+        distribution: [ 'zulu' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: ${{ matrix.distribution }}
+          cache: 'maven'
+
+      - name: Pre-resolve the mvnflight extension
+        working-directory: .mvn
+        run: mvn --batch-mode --errors --no-transfer-progress --update-snapshots dependency:resolve
+
+      - name: Set up Maven
+        run: mvn --errors --batch-mode --show-version "-Dmvnflight.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=3.9.11"
+
+      - name: Build with Maven
+        run: ./mvnw --batch-mode --errors --show-version verify javadoc:javadoc -Prun-its
+
+      - name: Archive the mvnflight build report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mvnflight-${{ matrix.os }}-jdk-${{ matrix.jdk }}-${{ matrix.distribution }}
+          path: target/mvnflight
