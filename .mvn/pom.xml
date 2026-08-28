@@ -3,11 +3,11 @@
   Bootstrap POM: NOT part of the Modello reactor.
 
   Maven loads the core extensions declared in .mvn/extensions.xml before it reads pom.xml,
-  resolving them from the repositories known to settings.xml only. mvnflight is published
+  resolving them from the repositories known to settings.xml only. mvn-lens is published
   as a SNAPSHOT to the Maven Central snapshot repository, which is not enabled by default,
   so the extension cannot be resolved on a clean machine.
 
-  Building this POM first downloads mvnflight-extension and its dependencies into the local
+  Building this POM first downloads mvn-lens-extension and its dependencies into the local
   repository, after which every later Maven invocation (the wrapper bootstrap and the build
   itself) resolves the extension from there:
 
@@ -21,18 +21,18 @@
   .mvn/.mvn/.gitkeep, and so reads .mvn/.mvn/extensions.xml, which does not exist, instead
   of .mvn/extensions.xml, the very file declaring the extension being downloaded.
 
-  See the "Pre-resolve the mvnflight extension" step in .github/workflows/maven.yml.
+  See the "Pre-resolve the mvn-lens extension" step in .github/workflows/maven.yml.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.codehaus.modello</groupId>
-  <artifactId>modello-mvnflight-bootstrap</artifactId>
+  <artifactId>modello-mvn-lens-bootstrap</artifactId>
   <version>2.7.1-SNAPSHOT</version>
 
-  <name>Modello (mvnflight extension bootstrap)</name>
-  <description>Downloads the mvnflight core extension into the local repository so the Modello build can load it.</description>
+  <name>Modello (mvn-lens extension bootstrap)</name>
+  <description>Downloads the mvn-lens core extension into the local repository so the Modello build can load it.</description>
 
   <repositories>
     <repository>
@@ -50,8 +50,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.github.mvnflight</groupId>
-      <artifactId>mvnflight-extension</artifactId>
+      <groupId>io.github.mvn-perf</groupId>
+      <artifactId>mvn-lens-extension</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
