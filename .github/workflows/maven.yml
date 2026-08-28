@@ -17,7 +17,7 @@
 
 # This workflow used to be a one-line call to the shared workflow
 # codehaus-plexus/.github/.github/workflows/maven.yml@master. It is inlined here because
-# the build now loads the mvnflight core extension (.mvn/extensions.xml) to record every
+# the build now loads the mvn-lens core extension (.mvn/extensions.xml) to record every
 # CI build, and that needs two steps the shared workflow does not offer: resolving the
 # extension from the Maven Central snapshot repository before any Maven invocation, and
 # archiving the report it produces. Everything else is a copy of the shared workflow with
@@ -54,30 +54,30 @@ jobs:
       # Must come before any Maven invocation rooted at the checkout, the wrapper bootstrap
       # below included: Maven loads the core extensions listed in .mvn/extensions.xml before
       # it reads pom.xml, resolving them from settings.xml only, so the Maven Central
-      # snapshot repository serving mvnflight cannot be declared in pom.xml. Building
+      # snapshot repository serving mvn-lens cannot be declared in pom.xml. Building
       # .mvn/pom.xml downloads the extension into the local repository, where every later
       # invocation finds it. See .mvn/pom.xml.
-      - name: Pre-resolve the mvnflight extension
+      - name: Pre-resolve the mvn-lens extension
         working-directory: .mvn
         run: mvn --batch-mode --errors --no-transfer-progress --update-snapshots dependency:resolve
 
-      # mvnflight is switched off here: this bootstrap invocation is not the build being
+      # mvn-lens is switched off here: this bootstrap invocation is not the build being
       # monitored, and its report would otherwise be left behind if the real build below
       # never reaches the end of its session.
       - name: Set up Maven
-        run: mvn --errors --batch-mode --show-version "-Dmvnflight.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=3.9.11"
+        run: mvn --errors --batch-mode --show-version "-Dmvnlens.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=3.9.11"
 
       - name: Build with Maven
         run: ./mvnw --batch-mode --errors --show-version verify javadoc:javadoc -Prun-its
 
-      # mvnflight writes the report when the Maven session ends, a failed one included,
+      # mvn-lens writes the report when the Maven session ends, a failed one included,
       # which is exactly the build worth looking at - hence always().
-      - name: Archive the mvnflight build report
+      - name: Archive the mvn-lens build report
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: mvnflight-fail-fast-build
-          path: target/mvnflight
+          name: mvn-lens-fail-fast-build
+          path: target/mvnlens
 
   verify:
     needs: build
@@ -102,19 +102,19 @@ jobs:
           distribution: ${{ matrix.distribution }}
           cache: 'maven'
 
-      - name: Pre-resolve the mvnflight extension
+      - name: Pre-resolve the mvn-lens extension
         working-directory: .mvn
         run: mvn --batch-mode --errors --no-transfer-progress --update-snapshots dependency:resolve
 
       - name: Set up Maven
-        run: mvn --errors --batch-mode --show-version "-Dmvnflight.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=3.9.11"
+        run: mvn --errors --batch-mode --show-version "-Dmvnlens.disabled=true" org.apache.maven.plugins:maven-wrapper-plugin:3.3.2:wrapper "-Dtype=only-script" "-Dmaven=3.9.11"
 
       - name: Build with Maven
         run: ./mvnw --batch-mode --errors --show-version verify javadoc:javadoc -Prun-its
 
-      - name: Archive the mvnflight build report
+      - name: Archive the mvn-lens build report
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: mvnflight-${{ matrix.os }}-jdk-${{ matrix.jdk }}-${{ matrix.distribution }}
-          path: target/mvnflight
+          name: mvn-lens-${{ matrix.os }}-jdk-${{ matrix.jdk }}-${{ matrix.distribution }}
+          path: target/mvnlens
