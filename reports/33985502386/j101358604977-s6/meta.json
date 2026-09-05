@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "repository": "mvn-perf/modello",
+  "serverUrl": "https://github.com",
+  "runId": 33985502386,
+  "runNumber": 11,
+  "runAttempt": 1,
+  "workflowRef": "mvn-perf/modello/.github/workflows/maven.yml@refs/heads/ci/build-monitor",
+  "jobKey": "verify",
+  "jobId": 101358604977,
+  "jobName": "macos-latest jdk-25-zulu",
+  "jobUrl": "https://github.com/mvn-perf/modello/actions/runs/33985502386/job/101358604977",
+  "runnerName": "GitHub Actions 1000001682",
+  "stepNumber": 6,
+  "stepName": "Build with Maven",
+  "stepResolution": "job-name/report-time",
+  "label": null,
+  "key": "j101358604977-s6",
+  "collectedAt": "2026-09-05T19:00:28.225Z",
+  "reports": [
+    {
+      "file": "report.html",
+      "originalPath": "target/mvnlens/report.html",
+      "label": null,
+      "summary": {
+        "schemaVersion": 1,
+        "groupId": "org.codehaus.modello",
+        "artifactId": "modello",
+        "version": "2.7.1-SNAPSHOT",
+        "goals": [
+          "verify",
+          "javadoc:javadoc"
+        ],
+        "threads": 1,
+        "builderId": "singlethreaded",
+        "mavenVersion": "3.9.11",
+        "jdkVersion": "25.0.4",
+        "status": "OK",
+        "startedAt": 1788634722237,
+        "endedAt": 1788634825485,
+        "totalMs": 103461,
+        "wallMs": 103248,
+        "cpuMs": 20686,
+        "gcMs": 863,
+        "gcCount": 193,
+        "jitMs": 8493,
+        "c2Ms": 8493,
+        "downloadMs": 69211,
+        "downloadBytes": 135649483,
+        "downloadCount": 807,
+        "moduleCount": 19,
+        "slowestMojo": {
+          "plugin": "org.apache.maven.plugins:maven-invoker-plugin",
+          "goal": "run",
+          "phase": "integration-test",
+          "executionId": "integration-test",
+          "moduleKey": "org.codehaus.modello:modello-maven-plugin:2.7.1-SNAPSHOT",
+          "durationMs": 37306
+        },
+        "slowestTest": {
+          "className": "org.codehaus.modello.plugin.converters.ConverterGeneratorTest",
+          "methodName": "testConverterGenerator",
+          "displayName": "testConverterGenerator()",
+          "framework": "JUNIT5",
+          "durationMs": 1860
+        },
+        "testCount": 14,
+        "testMs": 9538,
+        "issueCount": 0,
+        "issueSeverities": {},
+        "environment": {
+          "availableProcessors": 3,
+          "cpuCores": 3,
+          "cpuThreads": 3,
+          "memoryBytes": 7516192768,
+          "osName": "uname: Darwin 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:43 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_VMAPPLE arm64",
+          "jvmName": "OpenJDK 64-Bit Server VM",
+          "jvmVendor": "Azul Systems, Inc.",
+          "mvnd": false,
+          "githubActions": true,
+          "c2DisabledBy": null
+        }
+      },
+      "summarySource": "html",
+      "compressed": false,
+      "bytes": 1627225
+    }
+  ]
+}
