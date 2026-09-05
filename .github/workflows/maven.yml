@@ -20,8 +20,13 @@
 # the build now loads the mvn-lens core extension (.mvn/extensions.xml) to record every
 # CI build, and that needs two steps the shared workflow does not offer: resolving the
 # extension from the Maven Central snapshot repository before any Maven invocation, and
-# archiving the report it produces. Everything else is a copy of the shared workflow with
+# publishing the report it produces. Everything else is a copy of the shared workflow with
 # Modello's arguments applied, so keep the jobs below in sync with it.
+#
+# The reports are published with mvn-perf/build-monitor (https://github.com/mvn-perf/build-monitor):
+# each Maven job commits its report.html to this run's inbox branch, the "Build monitoring"
+# job links the monitoring page from the run summary, and .github/workflows/build-monitor.yml
+# turns both into the page at https://mvn-perf.github.io/modello/.
 #
 # Do not move the build arguments into an env entry named MAVEN_ARGS: Maven 3.9 reads that
 # variable itself and appends it to every invocation, so the wrapper bootstrap would run
@@ -39,10 +44,15 @@ jobs:
     # execute on any push or pull request from forked repo
     if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork)) &&
       !startsWith(github.event.head_commit.message , '[maven-release-plugin] prepare release')
+    permissions:
+      contents: write   # build-monitor/report commits the mvn-lens report to the inbox branch
+      actions: read     # … and identifies its own job/step through the Jobs API
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -71,13 +81,15 @@ jobs:
         run: ./mvnw --batch-mode --errors --show-version verify javadoc:javadoc -Prun-its
 
       # mvn-lens writes the report when the Maven session ends, a failed one included,
-      # which is exactly the build worth looking at - hence always().
-      - name: Archive the mvn-lens build report
-        if: always()
-        uses: actions/upload-artifact@v7
+      # which is exactly the build worth looking at - hence !cancelled(). The report is
+      # committed to the monitoring inbox branch (no artifact) and linked from the job
+      # summary. It must come right after the Maven step it profiles: a later Maven
+      # invocation in the same job would overwrite target/mvnlens/report.html.
+      - name: Publish the mvn-lens build report
+        if: ${{ !cancelled() }}
+        uses: mvn-perf/build-monitor/report@main
         with:
-          name: mvn-lens-fail-fast-build
-          path: target/mvnlens
+          job-name: fail-fast-build
 
   verify:
     needs: build
@@ -90,10 +102,15 @@ jobs:
         os: [ 'ubuntu-latest', 'windows-latest', 'macos-latest' ]
         jdk: [ '25', '21', '8' ]
         distribution: [ 'zulu' ]
+    permissions:
+      contents: write   # build-monitor/report commits the mvn-lens report to the inbox branch
+      actions: read     # … and identifies its own job/step through the Jobs API
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -112,9 +129,23 @@ jobs:
       - name: Build with Maven
         run: ./mvnw --batch-mode --errors --show-version verify javadoc:javadoc -Prun-its
 
-      - name: Archive the mvn-lens build report
-        if: always()
-        uses: actions/upload-artifact@v7
+      # Committed to the monitoring inbox branch (no artifact), see the build job.
+      - name: Publish the mvn-lens build report
+        if: ${{ !cancelled() }}
+        uses: mvn-perf/build-monitor/report@main
         with:
-          name: mvn-lens-${{ matrix.os }}-jdk-${{ matrix.jdk }}-${{ matrix.distribution }}
-          path: target/mvnlens
+          job-name: ${{ matrix.os }} jdk-${{ matrix.jdk }}-${{ matrix.distribution }}
+
+  monitoring:
+
+    name: Build monitoring
+    needs: [build, verify]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - name: Link the monitoring page from the run summary
+        uses: mvn-perf/build-monitor/summary@main
