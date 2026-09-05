@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "repository": "mvn-perf/modello",
+  "serverUrl": "https://github.com",
+  "runId": 33986067137,
+  "runNumber": 13,
+  "runAttempt": 1,
+  "workflowRef": "mvn-perf/modello/.github/workflows/maven.yml@refs/heads/master",
+  "jobKey": "verify",
+  "jobId": 101360154636,
+  "jobName": "windows-latest jdk-21-zulu",
+  "jobUrl": "https://github.com/mvn-perf/modello/actions/runs/33986067137/job/101360154636",
+  "runnerName": "GitHub Actions 1000001781",
+  "stepNumber": 6,
+  "stepName": "Build with Maven",
+  "stepResolution": "job-name/report-time",
+  "label": null,
+  "key": "j101360154636-s6",
+  "collectedAt": "2026-09-05T19:14:22.100Z",
+  "reports": [
+    {
+      "file": "report.html",
+      "originalPath": "target/mvnlens/report.html",
+      "label": null,
+      "summary": {
+        "schemaVersion": 1,
+        "groupId": "org.codehaus.modello",
+        "artifactId": "modello",
+        "version": "2.7.1-SNAPSHOT",
+        "goals": [
+          "verify",
+          "javadoc:javadoc"
+        ],
+        "threads": 1,
+        "builderId": "singlethreaded",
+        "mavenVersion": "3.9.11",
+        "jdkVersion": "21.0.12",
+        "status": "OK",
+        "startedAt": 1788635420573,
+        "endedAt": 1788635658944,
+        "totalMs": 239277,
+        "wallMs": 238370,
+        "cpuMs": 61420,
+        "gcMs": 0,
+        "gcCount": 133,
+        "jitMs": 68539,
+        "c2Ms": 68539,
+        "downloadMs": 98345,
+        "downloadBytes": 135649483,
+        "downloadCount": 807,
+        "moduleCount": 19,
+        "slowestMojo": {
+          "plugin": "org.apache.maven.plugins:maven-invoker-plugin",
+          "goal": "run",
+          "phase": "integration-test",
+          "executionId": "integration-test",
+          "moduleKey": "org.codehaus.modello:modello-maven-plugin:2.7.1-SNAPSHOT",
+          "durationMs": 82702
+        },
+        "slowestTest": {
+          "className": "org.codehaus.modello.plugin.converters.ConverterGeneratorTest",
+          "methodName": "testConverterGenerator",
+          "displayName": "testConverterGenerator()",
+          "framework": "JUNIT5",
+          "durationMs": 5060
+        },
+        "testCount": 14,
+        "testMs": 25505,
+        "issueCount": 0,
+        "issueSeverities": {},
+        "environment": {
+          "availableProcessors": 4,
+          "cpuCores": 16,
+          "cpuThreads": 4,
+          "memoryBytes": 17174360064,
+          "osName": "Windows Server 2025 , 64 bit Build 26100 (10.0.26100.33296)",
+          "jvmName": "OpenJDK 64-Bit Server VM",
+          "jvmVendor": "Azul Systems, Inc.",
+          "mvnd": false,
+          "githubActions": true,
+          "c2DisabledBy": null
+        }
+      },
+      "summarySource": "html",
+      "compressed": false,
+      "bytes": 1730543
+    }
+  ]
+}

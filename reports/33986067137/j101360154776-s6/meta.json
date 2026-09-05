@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "repository": "mvn-perf/modello",
+  "serverUrl": "https://github.com",
+  "runId": 33986067137,
+  "runNumber": 13,
+  "runAttempt": 1,
+  "workflowRef": "mvn-perf/modello/.github/workflows/maven.yml@refs/heads/master",
+  "jobKey": "verify",
+  "jobId": 101360154776,
+  "jobName": "ubuntu-latest jdk-25-zulu",
+  "jobUrl": "https://github.com/mvn-perf/modello/actions/runs/33986067137/job/101360154776",
+  "runnerName": "GitHub Actions 1000001788",
+  "stepNumber": 6,
+  "stepName": "Build with Maven",
+  "stepResolution": "job-name/report-time",
+  "label": null,
+  "key": "j101360154776-s6",
+  "collectedAt": "2026-09-05T19:12:19.850Z",
+  "reports": [
+    {
+      "file": "report.html",
+      "originalPath": "target/mvnlens/report.html",
+      "label": null,
+      "summary": {
+        "schemaVersion": 1,
+        "groupId": "org.codehaus.modello",
+        "artifactId": "modello",
+        "version": "2.7.1-SNAPSHOT",
+        "goals": [
+          "verify",
+          "javadoc:javadoc"
+        ],
+        "threads": 1,
+        "builderId": "singlethreaded",
+        "mavenVersion": "3.9.11",
+        "jdkVersion": "25.0.4",
+        "status": "OK",
+        "startedAt": 1788635390381,
+        "endedAt": 1788635536389,
+        "totalMs": 146353,
+        "wallMs": 146007,
+        "cpuMs": 47782,
+        "gcMs": 1009,
+        "gcCount": 141,
+        "jitMs": 48435,
+        "c2Ms": 48435,
+        "downloadMs": 0,
+        "downloadBytes": 0,
+        "downloadCount": 0,
+        "moduleCount": 19,
+        "slowestMojo": {
+          "plugin": "org.apache.maven.plugins:maven-invoker-plugin",
+          "goal": "run",
+          "phase": "integration-test",
+          "executionId": "integration-test",
+          "moduleKey": "org.codehaus.modello:modello-maven-plugin:2.7.1-SNAPSHOT",
+          "durationMs": 57558
+        },
+        "slowestTest": {
+          "className": "org.codehaus.modello.plugin.converters.ConverterGeneratorTest",
+          "methodName": "testConverterGenerator",
+          "displayName": "testConverterGenerator()",
+          "framework": "JUNIT5",
+          "durationMs": 4056
+        },
+        "testCount": 14,
+        "testMs": 18483,
+        "issueCount": 0,
+        "issueSeverities": {},
+        "environment": {
+          "availableProcessors": 4,
+          "cpuCores": 16,
+          "cpuThreads": 4,
+          "memoryBytes": 16766414848,
+          "osName": "DISTRIB_ID=Ubuntu",
+          "jvmName": "OpenJDK 64-Bit Server VM",
+          "jvmVendor": "Azul Systems, Inc.",
+          "mvnd": false,
+          "githubActions": true,
+          "c2DisabledBy": null
+        }
+      },
+      "summarySource": "html",
+      "compressed": false,
+      "bytes": 1910000
+    }
+  ]
+}
